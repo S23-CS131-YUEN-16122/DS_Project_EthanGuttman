@@ -14,7 +14,7 @@ Todo list:
   - [ ] Merge Sort
   - [x] Cocktail Sort
   - [x] Insertion Sort
-  - [x] Quick Sort
+  - [ ] Quick Sort
   - [ ] Shell Sort
   - [x] Running Program Loop
 - [ ] Create Documentation.
