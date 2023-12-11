@@ -1,5 +1,6 @@
 ##Presentation Link:
-[](https://youtu.be/loky2U3sis4)
+[Click here](https://youtu.be/loky2U3sis4)
+https://youtu.be/loky2U3sis4
 ## Introduction to Sorting Algorithms.
 
 This Github repository holds all of the files used for my presentation on Sorting Algorithms.
