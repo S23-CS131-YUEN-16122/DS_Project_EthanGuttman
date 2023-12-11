@@ -8,14 +8,12 @@ The following is contained:
 - /src, containing all the sorting algorithms shown in the presentation, implemented in C++.
 
 Todo list:
-- [ ] Create Sorting Algorithm Demonstration Program:
+- [x] Create Sorting Algorithm Demonstration Program:
   - [x] Bubble Sort
   - [x] Selection Sort
-  - [ ] Merge Sort
+  - [x] Merge Sort
   - [x] Cocktail Sort
   - [x] Insertion Sort
-  - [ ] Quick Sort
-  - [ ] Shell Sort
+  - [x] Shell Sort
   - [x] Running Program Loop
-- [ ] Create Documentation.
 - [ ] Create Presentation.
