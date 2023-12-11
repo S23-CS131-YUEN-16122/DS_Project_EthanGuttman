@@ -1,29 +1,32 @@
 //Sorting Algorithms Demonstration Program, by Ethan Guttman.
 
-#include <stdexcept>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <random>
 #include <string>
 #include <cctype>
 
-using std::cout, std::cin, std::vector, std::size_t, std::string;
+using std::cout, std::cin, std::vector, std::map, std::size_t, std::string;
 
-void swap(std::vector<int>& vec, size_t pos1, size_t pos2);
-vector<int> bubble_sort(vector<int>& dataset);
-vector<int> efficient_bubble_sort(vector<int>& dataset);
-vector<int> cocktail_shaker_sort(vector<int>& dataset);
-vector<int> cocktail_shaker_sort_improved(vector<int>& dataset);
-vector<int> insertion_sort(vector<int>& dataset);
-vector<int> selection_sort(vector<int>& dataset);
+map<string, int> bubble_sort(vector<int>& dataset);
+map<string, int> efficient_bubble_sort(vector<int>& dataset);
+map<string, int> cocktail_shaker_sort(vector<int>& dataset);
+map<string, int> cocktail_shaker_sort_improved(vector<int>& dataset);
+map<string, int> insertion_sort(vector<int>& dataset);
+map<string, int> selection_sort(vector<int>& dataset);
+map<string, int> shell_sort(vector<int>& dataset);
+void merge(vector<int> &dataset, int start, int mid, int end, int& comparisons, int& writes);
+void mergeSort(vector<int> &dataset, int start, int end, int& merges, int& comparisons, int& writes);
+
 void printSorts();
 void printDatasets();
 void printDataset(const vector<int>& dataset);
 char getChar(const vector<char>&& options);
 int getPosInt(const int upper);
 int getInt();
-void gen_rand_seq(vector<int>& vec, int lower, int upper);
+void gen_rand_set(vector<int>& vec, int lower, int upper);
 
 
 
@@ -41,7 +44,7 @@ int main() {
 
         if (data_option != '4') {
             cout << "Now, enter what you would like your dataset size to be.\n";
-            int seq_size = getPosInt(1'000'000);
+            int seq_size = getPosInt(100'000);
             dataset.resize(seq_size);
         }
 
@@ -61,7 +64,7 @@ int main() {
                 else
                     cout << "Range is not valid.\n";
             } while(!valid);
-            gen_rand_seq(dataset, lower, upper);
+            gen_rand_set(dataset, lower, upper);
             break;
             }
             case '2':
@@ -85,65 +88,90 @@ int main() {
         cout << "Sequence to be sorted: " << '\n';
         printDataset(dataset);
         printSorts();
-        char sort_option = getChar({'1', '2', '3', '4', '5', '6', '7', '8', '9', 'x'});
+        char sort_option = getChar({'1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', 'a'});
         cout << '\n';
         
-        vector<int> sorted_seq = dataset;
-        vector<int> sort_stats;
+        vector<int> sorted_set = dataset;
+        vector<map<string, int>> sort_stats;
 
 
         switch(sort_option) {
             case 'x':
             running = false;
             break;
+
+            case 'a':
+            sort_stats.push_back(bubble_sort(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(efficient_bubble_sort(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(cocktail_shaker_sort(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(cocktail_shaker_sort_improved(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(insertion_sort(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(selection_sort(sorted_set));
+            sorted_set = dataset;
+            sort_stats.push_back(shell_sort(sorted_set));
+            sorted_set = dataset;
+            {
+                map<string, int> merge_sort_stats = {{"Merges", 0}, {"Comparisons", 0}, {"Writes", 0}};
+                mergeSort(sorted_set, 0, sorted_set.size()-1, merge_sort_stats["Merges"], merge_sort_stats["Comparisons"], merge_sort_stats["Writes"]);
+                sort_stats.push_back(merge_sort_stats);
+            }
+            break;
+
             case '1':
-            sort_stats = bubble_sort(sorted_seq);
+            sort_stats.push_back(bubble_sort(sorted_set));
             break;
 
             case '2':
-            sort_stats = efficient_bubble_sort(sorted_seq);
+            sort_stats.push_back(efficient_bubble_sort(sorted_set));
             break; 
 
             case '3':
-            sort_stats = cocktail_shaker_sort(sorted_seq);
+            sort_stats.push_back(cocktail_shaker_sort(sorted_set));
             break;
 
             case '4':
-            sort_stats = cocktail_shaker_sort_improved(sorted_seq);
+            sort_stats.push_back(cocktail_shaker_sort_improved(sorted_set));
             break;
 
             case '5':
-            sort_stats = insertion_sort(sorted_seq);
+            sort_stats.push_back(insertion_sort(sorted_set));
             break;
 
             case '6':
-            sort_stats = selection_sort(sorted_seq);
+            sort_stats.push_back(selection_sort(sorted_set));
             break;
 
             case '7':
+            sort_stats.push_back(shell_sort(sorted_set));
+            break;
             case '8':
-            case '9':
-            cout << "Option not implemented.\n";
+            {
+            map<string, int> merge_sort_stats = {{"Merges", 0}, {"Comparisons", 0}, {"Writes", 0}};
+            mergeSort(sorted_set, 0, sorted_set.size()-1, merge_sort_stats["Merges"], merge_sort_stats["Comparisons"], merge_sort_stats["Writes"]);
+            sort_stats.push_back(merge_sort_stats);
+            }
         }
 
-        if (sort_option != 'x' && int(sort_option - '0') < int('7'-'0')) {
-            cout << "Comparisons: " << sort_stats[0] << '\n';
-            cout << "Swaps: " << sort_stats[1] << '\n';
-            cout << "Passes: " << sort_stats[2] << '\n';
+        if (sort_option != 'x' && sort_option != 'c') {
+            for (auto stat_set : sort_stats) {
+                for (auto stat_pair : stat_set) {
+                    cout << stat_pair.first << ": " << stat_pair.second << '\n';
+                }
+                cout << '\n';
+            }
         }
 
-        printDataset(sorted_seq);
+        printDataset(sorted_set);
 
     } while (running);
 }
 
-void swap(std::vector<int>& vec, size_t pos1, size_t pos2) {
-    int temp = vec[pos1];
-    vec[pos1] = vec[pos2];
-    vec[pos2] =  temp;
-}
-
-vector<int> bubble_sort(vector<int>& dataset) {
+map<string, int> bubble_sort(vector<int>& dataset) {
     cout << "Performing Bubble sort..." << '\n';
     size_t size = dataset.size();
 
@@ -155,7 +183,7 @@ vector<int> bubble_sort(vector<int>& dataset) {
     for(size_t i = 0; i<size-1; ++i) {
         for(size_t j = 0; j<size-i-1; ++j) {
             if (dataset[j]>dataset[j+1]) {
-                swap(dataset, j, j+1);
+                std::swap(dataset[j], dataset[j+1]);
                 ++swaps;
             }
             ++comparisons;
@@ -163,10 +191,10 @@ vector<int> bubble_sort(vector<int>& dataset) {
         ++passes;
     }
     cout << "Sorted!\n";
-    return {comparisons, swaps, passes};
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}} ;
 }
 
-vector<int> efficient_bubble_sort(vector<int>& dataset) {
+map<string, int> efficient_bubble_sort(vector<int>& dataset) {
     cout << "Performing Bubble sort (improved)..." << '\n';
     size_t size = dataset.size();
 
@@ -179,7 +207,7 @@ vector<int> efficient_bubble_sort(vector<int>& dataset) {
         bool swap_performed = false;
         for(size_t j = 0; j<size-i-1; ++j) {
             if (dataset[j]>dataset[j+1]) {
-                swap(dataset, j, j+1);
+                std::swap(dataset[j], dataset[j+1]);
                 swap_performed = true;
                 ++swaps;
             }
@@ -190,11 +218,11 @@ vector<int> efficient_bubble_sort(vector<int>& dataset) {
             break;
     }
     cout << "Sorted!\n";
-    return {comparisons, swaps, passes};
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}} ;
 
 }
 
-vector<int> cocktail_shaker_sort(vector<int>& dataset) {
+map<string, int> cocktail_shaker_sort(vector<int>& dataset) {
     cout << "Performing Cocktail-Shaker sort..." << '\n';
     size_t size = dataset.size();
     bool swap_performed = true;
@@ -210,7 +238,7 @@ vector<int> cocktail_shaker_sort(vector<int>& dataset) {
     while (start!=end) {
         for(int i = start; i != end; ++i) {
             if (dataset[i] > dataset[i+1]) {
-                swap(dataset, i, i+1);
+                std::swap(dataset[i], dataset[i+1]);
                 ++swaps;
             }
             ++comparisons;
@@ -222,7 +250,7 @@ vector<int> cocktail_shaker_sort(vector<int>& dataset) {
             
         for(int j = end; j != start; --j) {
             if (dataset[j] < dataset[j-1]) {
-                swap(dataset, j, j-1);
+                std::swap(dataset[j], dataset[j-1]);
                 ++swaps;
             }
             ++comparisons;
@@ -231,10 +259,10 @@ vector<int> cocktail_shaker_sort(vector<int>& dataset) {
         ++start;
     }
     cout << "Sorted!\n";
-    return {comparisons, swaps, passes};
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
 }
 
-vector<int> cocktail_shaker_sort_improved(vector<int>& dataset) {
+map<string, int> cocktail_shaker_sort_improved(vector<int>& dataset) {
     cout << "Performing Cocktail-Shaker sort..." << '\n';
     size_t size = dataset.size();
     bool swap_performed = true;
@@ -251,7 +279,7 @@ vector<int> cocktail_shaker_sort_improved(vector<int>& dataset) {
         swap_performed = false;
         for(int i = start; i != end; ++i) {
             if (dataset[i] > dataset[i+1]) {
-                swap(dataset, i, i+1);
+                std::swap(dataset[i], dataset[i+1]);
                 swap_performed = true;
                 ++swaps;
             }
@@ -264,7 +292,7 @@ vector<int> cocktail_shaker_sort_improved(vector<int>& dataset) {
         swap_performed = false;
         for(int j = end; j != start; --j) {
             if (dataset[j] < dataset[j-1]) {
-                swap(dataset, j, j-1);
+                std::swap(dataset[j], dataset[j-1]);
                 swap_performed = true;
                 ++swaps;
             }
@@ -274,11 +302,11 @@ vector<int> cocktail_shaker_sort_improved(vector<int>& dataset) {
         ++start;
     }
     cout << "Sorted!\n";
-    return {comparisons, swaps, passes};
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
 }
 
 
-vector<int> insertion_sort(vector<int>& dataset) {
+map<string, int> insertion_sort(vector<int>& dataset) {
     cout << "Performing Insertion Sort..." << '\n';
     size_t size = dataset.size();
 
@@ -286,21 +314,24 @@ vector<int> insertion_sort(vector<int>& dataset) {
     int swaps = 0;
     int comparisons = 0;
     int passes = 0;
-
-    for(int i = 0; i<size; ++i) {
+    for(int i = 1; i<size; ++i) {
         for(int j = i-1; j>=0; j--) {
+            ++comparisons;
             if(dataset[j+1] < dataset[j]) {
-                swap(dataset, j+1, j);
+                std::swap(dataset[j], dataset[j+1]);
                 ++swaps;
             }
-            ++comparisons;
+            else 
+                break;
+            
         }
         ++passes;
     }
-    return {comparisons, swaps, passes};
+    cout << "Sorted!\n";
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
 }
 
-vector<int> selection_sort(vector<int>& dataset) {
+map<string, int> selection_sort(vector<int>& dataset) {
     cout << "Performing Selection Sort...";
     size_t size = dataset.size();
 
@@ -309,7 +340,7 @@ vector<int> selection_sort(vector<int>& dataset) {
     int comparisons = 0;
     int passes = 0;
 
-    for(int i = 0; i<size; ++i) {
+    for(int i = 0; i<size-1; ++i) {
         int min_idx = i;
         int min_val = dataset[i];
         for(int j = i+1; j<size; ++j) {
@@ -321,12 +352,90 @@ vector<int> selection_sort(vector<int>& dataset) {
             ++comparisons;
         }
         if (min_idx != i) {
-            swap(dataset, i, min_idx);
+            std::swap(dataset[i], dataset[min_idx]);
             ++swaps;
         }
         ++passes;
     }
-    return {comparisons, swaps, passes};
+    cout << "Sorted!\n";
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
+}
+
+map<string, int> shell_sort(vector<int>& dataset) {
+    cout << "Performing Insertion Sort..." << '\n';
+    int size = dataset.size();
+    int swaps = 0;
+    int comparisons = 0;
+    int passes = 0;
+
+    for(int gap_size = size/2; gap_size > 0; gap_size /= 2) {
+        for(int i = gap_size; i < size; ++i) {
+            for(int j = i; j >= gap_size; j -= gap_size) {
+                ++comparisons;
+                if (dataset[j-gap_size] > dataset[j]) {
+                    std::swap(dataset[j], dataset[j-gap_size]);
+                    ++swaps;
+                }
+                else
+                    break;
+            }
+            ++passes;
+        }
+    }
+    cout << "Sorted!" << '\n';
+    return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
+}
+
+#include <iostream>
+#include <vector>
+
+//CREDIT TO: big-o.io/examples/merge-sort/c++/
+void merge(vector<int> &dataset, int start, int mid, int end, int& comparisons, int& writes) {
+    vector<int> left(mid - start + 1);
+    vector<int> right(end - mid);
+
+    int i = 0, j = 0;
+    int k = start;
+    
+    // fill in left array
+    for (int i = 0; i < left.size(); ++i)
+        left[i] = dataset[start + i];
+
+    // fill in right array
+    for (int i = 0; i < right.size(); ++i)
+        right[i] = dataset[mid + 1 + i];
+
+    while (i < left.size() && j < right.size()) {
+        if (left[i] <= right[j]) {
+            dataset[k] = left[i];
+            i++;
+        } else {
+            dataset[k] = right[j];
+            j++;
+        }
+        ++comparisons;
+        ++writes;
+        k++;
+    }
+    while (i < left.size()) {
+        dataset[k++] = left[i++];
+        ++writes;
+    }
+    while (j < right.size()) {
+        dataset[k++] = right[j++];
+        ++writes;
+    }
+}
+
+void mergeSort(vector<int> &dataset, int start, int end, int& merges, int& comparisons, int& writes) {
+    if (start < end) {
+        int mid = start + (end - start) / 2;
+
+        mergeSort(dataset, start, mid, merges, comparisons, writes);
+        mergeSort(dataset, mid + 1, end, merges, comparisons, writes);
+        merge(dataset, start, mid, end, comparisons, writes);
+        ++merges;
+    }
 }
 
 void printDataset(const vector<int>& dataset) {
@@ -346,7 +455,7 @@ void printSorts() {
     cout << "6 - Selection Sort\n";
     cout << "7 - Shell Short\n";
     cout << "8 - Merge Sort\n";
-    cout << "9 - Quick Sort\n";
+    cout << "a - Run all.\n";
     cout << "x - Exit Program\n";
 }
 
@@ -401,7 +510,7 @@ int getInt() {
     return std::stoi(input);
 }
 
-void gen_rand_seq(vector<int>& vec, int lower, int upper) {
+void gen_rand_set(vector<int>& vec, int lower, int upper) {
     //Create and generate seed for the rng generator (When first running function).
     static std::random_device rand_dev{};
     static std::mt19937 gen{rand_dev()};
@@ -411,5 +520,4 @@ void gen_rand_seq(vector<int>& vec, int lower, int upper) {
 
     //Fill vector with random numbers.
     std::generate(vec.begin(), vec.end(), [&]() {return int_distrib(gen);});
-
 }
