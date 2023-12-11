@@ -1,3 +1,5 @@
+##Presentation Link:
+[](https://youtu.be/loky2U3sis4)
 ## Introduction to Sorting Algorithms.
 
 This Github repository holds all of the files used for my presentation on Sorting Algorithms.
@@ -16,7 +18,7 @@ Todo list:
   - [x] Insertion Sort
   - [x] Shell Sort
   - [x] Running Program Loop
-- [ ] Create Presentation.
+- [x] Create Presentation.
 
 ## HOW TO RUN CODE ##
 Use any C++ compiler (must be standard C++ 11 or over) and build the executable from main.cpp (:
