@@ -386,9 +386,6 @@ map<string, int> shell_sort(vector<int>& dataset) {
     return {{"Comparisons", comparisons}, {"Swaps", swaps}, {"Passes", passes}};
 }
 
-#include <iostream>
-#include <vector>
-
 //CREDIT TO: big-o.io/examples/merge-sort/c++/
 void merge(vector<int> &dataset, int start, int mid, int end, int& comparisons, int& writes) {
     vector<int> left(mid - start + 1);
