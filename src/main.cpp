@@ -362,7 +362,7 @@ map<string, int> selection_sort(vector<int>& dataset) {
 }
 
 map<string, int> shell_sort(vector<int>& dataset) {
-    cout << "Performing Insertion Sort..." << '\n';
+    cout << "Performing Shell Sort..." << '\n';
     int size = dataset.size();
     int swaps = 0;
     int comparisons = 0;
