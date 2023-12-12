@@ -23,7 +23,7 @@ Todo list:
 - [x] Create Presentation.
 
 ## HOW TO RUN CODE ##
-Use any C++ compiler (must be standard C++ 11 or over) and build the executable from main.cpp (:
+Use any C++ compiler (must be standard C++ 17 or over) and build the executable from main.cpp (:
 - You can build from the command line with GCC or
 - Add the main.cpp file into a new project within Visual Studio and build it with MVSC.
 - Use a different compiler than what I mentioned.
